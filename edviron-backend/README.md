@@ -396,20 +396,6 @@ Common status codes:
 | NODE_ENV        | Environment (development/production) | No                 |
 | CORS_ORIGIN     | Allowed CORS origin                  | Yes                |
 
-## Testing
-
-Run the test suite:
-
-```bash
-npm test
-```
-
-Run e2e tests:
-
-```bash
-npm run test:e2e
-```
-
 ## Security
 
 - All routes are protected with JWT authentication
@@ -426,15 +412,3 @@ The application logs:
 - Failed transactions
 - Authentication attempts
 - System errors
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License.
