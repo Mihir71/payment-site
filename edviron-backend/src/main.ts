@@ -29,7 +29,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // Determine port (Render injects PORT)
-  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  const port = process.env.PORT || 3000;
 
   // Bind to 0.0.0.0 so external traffic can reach it
   await app.listen(port, '0.0.0.0');
