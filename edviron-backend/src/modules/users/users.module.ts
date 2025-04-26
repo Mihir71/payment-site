@@ -1,5 +1,3 @@
-// src/modules/users/users.module.ts
-
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -12,6 +10,6 @@ import { UsersService } from './users.service';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   providers: [UsersService],
-  exports: [UsersService],   // so AuthModule can inject and validate users
+  exports: [UsersService],  
 })
 export class UsersModule {}

@@ -24,7 +24,7 @@ export default function TransactionsOverview() {
   const navigate = useNavigate();
   const { schoolId: routeSchoolId } = useParams ? useParams() : {};
 
-  // Fetch
+  
   useEffect(() => {
     setLoading(true);
     if (selectedSchool) {
@@ -47,7 +47,7 @@ export default function TransactionsOverview() {
     }
   }, [params.toString(), selectedSchool]);
 
-  // Helpers
+ 
   const schoolOptions = useMemo(
     () =>
       Array.from(new Set(data.map((tx) => tx.school_id)))
@@ -90,7 +90,7 @@ export default function TransactionsOverview() {
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
+        
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <h1 className="text-3xl font-extrabold text-gray-900">
             Transactions Overview
@@ -109,7 +109,7 @@ export default function TransactionsOverview() {
           </div>
         </header>
 
-        {/* Summary Cards */}
+       
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             {
@@ -150,11 +150,11 @@ export default function TransactionsOverview() {
           ))}
         </div>
 
-        {/* Filters Panel */}
+        
         <section className="bg-white p-4 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">Filters</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Status */}
+            
             <div>
               <label className="block text-sm font-medium mb-1">Status</label>
               <div className="flex flex-wrap gap-2">
@@ -173,7 +173,7 @@ export default function TransactionsOverview() {
                 ))}
               </div>
             </div>
-            {/* School */}
+           
             <div>
               <label className="block text-sm font-medium mb-1">School</label>
               <Select
@@ -192,7 +192,7 @@ export default function TransactionsOverview() {
                 classNamePrefix="react-select"
               />
             </div>
-            {/* Date From */}
+            
             <div>
               <label className="block text-sm font-medium mb-1">From</label>
               <input
@@ -209,7 +209,7 @@ export default function TransactionsOverview() {
                 className="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
-            {/* Date To */}
+            
             <div>
               <label className="block text-sm font-medium mb-1">To</label>
               <input
@@ -229,7 +229,7 @@ export default function TransactionsOverview() {
           </div>
         </section>
 
-        {/* Data Table */}
+        
         <section className="bg-white rounded-lg shadow overflow-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50 sticky top-0">
@@ -303,7 +303,7 @@ export default function TransactionsOverview() {
           </table>
         </section>
 
-        {/* Pagination */}
+        
         <nav className="flex justify-center items-center space-x-4">
           <button
             onClick={() => goPage(page - 1)}

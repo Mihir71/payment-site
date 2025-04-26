@@ -10,7 +10,7 @@ import {
 
 @Module({
   imports: [
-    // only register our WebhookLog schema
+    
     MongooseModule.forFeature([
       { name: WebhookLog.name, schema: WebhookLogSchema },
       { name: OrderStatus.name, schema: OrderStatusSchema },

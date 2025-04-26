@@ -15,10 +15,7 @@ import {
       private readonly userModel: Model<UserDocument>,
     ) {}
   
-    /**
-     * Registers a new user. Throws if email already exists.
-     * Password is auto-hashed by the schema pre-save hook.
-     */
+  
     async createUser(dto: CreateUserDto): Promise<Partial<User>> {
       const exists = await this.userModel.findOne({ email: dto.email }).exec();
       if (exists) throw new ConflictException('Email already in use');
@@ -30,10 +27,7 @@ import {
       return rest;
     }
   
-    /**
-     * Finds a user by email, including the hashed password.
-     * Used by AuthService to validate credentials.
-     */
+   
     async findByEmail(email: string): Promise<UserDocument> {
       const user = await this.userModel
         .findOne({ email })
@@ -43,10 +37,7 @@ import {
       return user;
     }
   
-    /**
-     * Finds a user by ID. Does not include password.
-     * Used in JwtStrategy.validate().
-     */
+
     async findById(id: string): Promise<Partial<User>> {
       const user = await this.userModel.findById(id).exec();
       if (!user) throw new NotFoundException('User not found');

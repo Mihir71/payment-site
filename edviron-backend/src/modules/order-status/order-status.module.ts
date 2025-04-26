@@ -11,6 +11,6 @@ import { OrderStatusService } from './order-status.service';
     ]),
   ],
   providers: [OrderStatusService],
-  exports: [OrderStatusService],  // so WebhookLogModule or TransactionsModule can update/query statuses
+  exports: [OrderStatusService],  
 })
 export class OrderStatusModule {}

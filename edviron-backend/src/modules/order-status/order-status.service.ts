@@ -46,17 +46,16 @@ export class OrderStatusService {
 
   async getAllTransactions(): Promise<any[]> {
     return this.statusModel.aggregate([
-      // 1) lookup the matching Order document
+     
       {
         $lookup: {
-          from: 'orders',              // MongoDB collection name for Order
-          localField: 'collect_id',    // OrderStatus.collect_id
-          foreignField: '_id',         // Order._id
+          from: 'orders',              
+          localField: 'collect_id',   
+          foreignField: '_id',        
           as: 'order'
         }
       },
-      { $unwind: '$order' },           // assume every status has an order
-      // 2) project only the fields you want
+      { $unwind: '$order' },           
       {
         $project: {
           _id:              0,

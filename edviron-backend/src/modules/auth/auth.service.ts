@@ -12,12 +12,12 @@ import { User }   from '@modules/users/users.schema';
       private readonly jwtService: JwtService,
     ) {}
   
-    // Register a new user
+    
     async register(dto: CreateUserDto) {
       return this.usersService.createUser(dto);
     }
   
-    // Validate credentials and return user data (without password) or null
+   
     private async validateUser(email: string, password: string) {
       const user = await this.usersService.findByEmail(email);
       const valid = await user.comparePassword(password);
@@ -26,7 +26,7 @@ import { User }   from '@modules/users/users.schema';
       return safeUser;
     }
   
-    // Login: validate, then sign a JWT
+    
     async login(dto: LoginDto) {
       const user = await this.validateUser(dto.email, dto.password);
       if (!user) throw new UnauthorizedException('Invalid credentials');

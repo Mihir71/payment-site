@@ -22,7 +22,7 @@ export class TransactionsService extends BaseService<OrderDocument> {
     super(orderModel);
   }
 
-  /** GET /transactions */
+ 
   async getAllTransactions(filters: TransactionFilterDto) {
     const { page = 1, limit = 10, sort, order = 'desc', status } = filters;
 
@@ -36,7 +36,7 @@ export class TransactionsService extends BaseService<OrderDocument> {
         },
       },
       { $unwind: '$status' },
-      // ← we'll insert the status-filter here (at index 2)
+     
       {
         $project: {
           _id: 0,
@@ -49,7 +49,7 @@ export class TransactionsService extends BaseService<OrderDocument> {
           custom_order_id: { $toString: '$_id' },
         },
       },
-      // … then sorting, paging, etc.
+   
     ];
 
     if (status?.length) {
@@ -58,7 +58,7 @@ export class TransactionsService extends BaseService<OrderDocument> {
       });
     }
 
-    // Add sorting if specified
+   
     if (sort) {
       const sortField = sort === 'payment_time' ? 'createdAt' : sort;
       pipeline.push({
@@ -86,7 +86,7 @@ export class TransactionsService extends BaseService<OrderDocument> {
     };
   }
 
-  /** GET /transactions/school/:schoolId */
+
   async getTransactionsBySchool(
     schoolId: string,
     filters: TransactionFilterDto,
@@ -101,23 +101,23 @@ export class TransactionsService extends BaseService<OrderDocument> {
       dateTo,
     } = filters;
 
-    // build base match stage
+
     const matchConditions: any[] = [];
 
-    // Add school ID match (checking both ObjectId and String)
+ 
     if (Types.ObjectId.isValid(schoolId)) {
       matchConditions.push({
         $or: [
-          { school_id: new Types.ObjectId(schoolId) }, // Match ObjectId
-          { school_id: schoolId }, // Match String
+          { school_id: new Types.ObjectId(schoolId) }, 
+          { school_id: schoolId }, 
         ],
       });
     } else {
-      // If schoolId is not a valid ObjectId format, only match string
+      
       matchConditions.push({ school_id: schoolId });
     }
 
-    // Add optional date range match
+   
     if (dateFrom || dateTo) {
       const dateMatch: any = { createdAt: {} };
       if (dateFrom) dateMatch.createdAt.$gte = new Date(dateFrom);
@@ -125,15 +125,15 @@ export class TransactionsService extends BaseService<OrderDocument> {
       matchConditions.push(dateMatch);
     }
 
-    // Combine conditions using $and (implicit if multiple objects in array)
-    // const matchStage = matchConditions.length > 0 ? { $match: { $and: matchConditions } } : {};
+    
+   
 
     const pipeline: PipelineStage[] = [];
     if (matchConditions.length > 0) {
       pipeline.push({ $match: { $and: matchConditions } });
     }
 
-    // left‑join to orderstatuses
+    
     pipeline.push(
       {
         $lookup: {
@@ -143,21 +143,21 @@ export class TransactionsService extends BaseService<OrderDocument> {
           as: 'status',
         },
       },
-      // unwind but KEEP orders with no status docs
+      
       { $unwind: { path: '$status', preserveNullAndEmptyArrays: true } },
     );
 
-    // only filter by status if the client passed a ?status=
+   
     if (status?.length) {
       pipeline.push({ $match: { 'status.status': { $in: status } } });
     }
 
-    // project with defaults for missing status
+   
     pipeline.push({
       $project: {
         _id: 0,
         collect_id: '$_id',
-        school_id: 1, // Keep the original school_id field
+        school_id: 1, 
         gateway: '$gateway_name',
         order_amount: { $ifNull: ['$status.order_amount', 0] },
         transaction_amount: { $ifNull: ['$status.transaction_amount', 0] },
@@ -167,7 +167,7 @@ export class TransactionsService extends BaseService<OrderDocument> {
       },
     });
 
-    // sort
+    
     pipeline.push({
       $sort: {
         [sort === 'payment_time' ? 'createdAt' : sort]:
@@ -175,13 +175,13 @@ export class TransactionsService extends BaseService<OrderDocument> {
       },
     });
 
-    // count total
+    
     const countRes = await this.orderModel
       .aggregate([...pipeline, { $count: 'total' }])
       .exec();
     const total = countRes[0]?.total || 0;
 
-    // fetch paged items
+    
     const items = await this.orderModel
       .aggregate([
         ...pipeline,
@@ -201,7 +201,7 @@ export class TransactionsService extends BaseService<OrderDocument> {
     };
   }
 
-  /** GET /transaction-status/:custom_order_id */
+
   async getTransactionStatus(customOrderId: string) {
     if (!Types.ObjectId.isValid(customOrderId)) {
       throw new NotFoundException(`Invalid order ID ${customOrderId}`);

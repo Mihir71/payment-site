@@ -28,7 +28,7 @@ export class WebhookLogService {
 
     const orderInfo = payload.order_info;
 
-    // Create webhook log entry
+    
     const webhookLog = new this.webhookLogModel({
       collect_request_id: orderInfo.order_id,
       status: orderInfo.status,
@@ -46,7 +46,7 @@ export class WebhookLogService {
     const savedLog = await webhookLog.save();
     this.logger.log('Saved webhook log:', savedLog);
 
-    // Update Order Status
+   
     const updatedOrderStatus = await this.orderStatusModel.findOneAndUpdate(
       { collect_id: orderInfo.order_id },
       {

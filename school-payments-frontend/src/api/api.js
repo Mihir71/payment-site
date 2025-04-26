@@ -6,13 +6,13 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
   paramsSerializer: {
-    indexes: null, // This will prevent the [] in array parameters
+    indexes: null, 
   },
 });
 
-// 1) ALWAYS read the token from localStorage on each request
+
 api.interceptors.request.use((cfg) => {
-  const token = localStorage.getItem("authToken"); // match your AuthContext key
+  const token = localStorage.getItem("authToken"); 
   if (token) {
     cfg.headers.Authorization = `Bearer ${token}`;
   }

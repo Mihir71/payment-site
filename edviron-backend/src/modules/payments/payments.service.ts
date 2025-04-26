@@ -6,34 +6,34 @@ import {
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-// import { JwtService } from '@nestjs/jwt'; // Remove if not used for app's JWT
-import * as jwt from 'jsonwebtoken'; // Import jsonwebtoken directly for PG signing
-import { CreateCollectDto } from './dto/create-collect.dto'; // Assuming this is the correct DTO name
-import { lastValueFrom } from 'rxjs'; // Import lastValueFrom
+
+import * as jwt from 'jsonwebtoken'; 
+import { CreateCollectDto } from './dto/create-collect.dto'; 
+import { lastValueFrom } from 'rxjs'; 
 
 @Injectable()
 export class PaymentsService {
-  // Renamed from PaymentService for consistency
+
   private readonly apiUrl: string;
   private readonly apiKey: string;
   private readonly schoolId: string;
-  // private readonly callbackUrl: string; // Callback URL comes from the DTO now
-  private readonly pgKey: string; // Added PG_KEY
+
+  private readonly pgKey: string; 
 
   constructor(
-    private readonly httpService: HttpService, // Renamed http to httpService for clarity
-    // private readonly jwtService: JwtService, // Remove if not used
+    private readonly httpService: HttpService,
+   
     private readonly config: ConfigService,
   ) {
-    // Validate and assign required config values
-    const apiUrl = this.config.get<string>('PG_API_URL'); // Example, adjust if needed
-    const apiKey = this.config.get<string>('PAYMENT_API_KEY'); // Match .env key
+    
+    const apiUrl = this.config.get<string>('PG_API_URL'); 
+    const apiKey = this.config.get<string>('PAYMENT_API_KEY'); 
     const schoolId = this.config.get<string>('SCHOOL_ID');
     const pgKey = this.config.get<string>('PG_KEY');
-    // const callbackUrl = this.config.get<string>('CALLBACK_URL'); // Remove if callback comes from DTO
+   
 
     if (!apiUrl || !apiKey || !schoolId || !pgKey) {
-      // Add pgKey check
+      
       throw new InternalServerErrorException(
         'Missing required payment gateway configuration in .env',
       );
@@ -42,20 +42,18 @@ export class PaymentsService {
     this.apiUrl = apiUrl;
     this.apiKey = apiKey;
     this.schoolId = schoolId;
-    this.pgKey = pgKey; // Assign pgKey
-    // this.callbackUrl = callbackUrl; // Remove if callback comes from DTO
+    this.pgKey = pgKey; 
+   
   }
 
-  /**
-   * Creates a payment request and returns the payment URL
-   */
+
   async createCollectRequest(dto: CreateCollectDto): Promise<{
     collect_request_id: string;
     Collect_request_url: string;
     sign: string;
   }> {
     try {
-      // Generate JWT sign
+     
       const signPayload = {
         school_id: dto.school_id,
         amount: dto.amount,
@@ -64,7 +62,7 @@ export class PaymentsService {
 
       const sign = jwt.sign(signPayload, this.pgKey);
 
-      // Prepare request body
+     
       const body = {
         school_id: dto.school_id,
         amount: dto.amount,
@@ -83,7 +81,7 @@ export class PaymentsService {
         headers: { ...headers, Authorization: 'Bearer [REDACTED]' },
       });
 
-      // Make API request
+    
       const response$ = this.httpService.post(
         `${this.apiUrl}/create-collect-request`,
         body,
@@ -93,7 +91,7 @@ export class PaymentsService {
 
       console.log('Payment gateway response:', data);
 
-      // Handle both uppercase and lowercase URL fields
+      
       const paymentUrl = data.Collect_request_url || data.collect_request_url;
 
       if (!paymentUrl) {
@@ -120,12 +118,10 @@ export class PaymentsService {
     }
   }
 
-  /**
-   * Checks the status of a payment request
-   */
+  
   async checkPaymentStatus(collectRequestId: string): Promise<any> {
     try {
-      // Generate JWT sign for status check
+      
       const signPayload = {
         school_id: this.schoolId,
         collect_request_id: collectRequestId,
@@ -133,7 +129,7 @@ export class PaymentsService {
 
       const sign = jwt.sign(signPayload, this.pgKey);
 
-      // Construct URL with query parameters
+    
       const url = `${this.apiUrl}/collect-request/${collectRequestId}`;
       const fullUrl = `${url}?school_id=${this.schoolId}&sign=${encodeURIComponent(sign)}`;
 
@@ -141,7 +137,7 @@ export class PaymentsService {
         Authorization: `Bearer ${this.apiKey}`,
       };
 
-      // Make API request
+     
       const response$ = this.httpService.get(fullUrl, { headers });
       const { data } = await lastValueFrom(response$);
 

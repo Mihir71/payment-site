@@ -8,20 +8,20 @@ import { JwtAuthGuard }      from '@modules/auth/jwt-auth.guard';
   export class AuthController {
     constructor(private readonly authService: AuthService) {}
   
-    // POST /auth/register
+   
     @Post('register')
     async register(@Body() dto: CreateUserDto) {
       return this.authService.register(dto);
     }
   
-    // POST /auth/login
+  
     @HttpCode(HttpStatus.OK)
     @Post('login')
     async login(@Body() dto: LoginDto) {
       return this.authService.login(dto);
     }
   
-    // GET /auth/profile (test-protected)
+    
     @UseGuards(JwtAuthGuard)
     @Get('profile')
     profile(@Request() req) {

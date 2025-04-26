@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem('authToken'));
   const navigate = useNavigate();
 
-  // attach token to axios
+ 
   useEffect(() => {
     if (token) {
       localStorage.setItem('authToken', token);
@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
 
   const register = async (email, password) => {
     await api.post('/auth/register', { email, password });
-    // auto-login on register
+  
     return login(email, password);
   };
 
