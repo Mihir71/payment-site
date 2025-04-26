@@ -166,19 +166,19 @@ The frontend communicates with the backend through the following endpoints:
 
 ### Login Page
 
-![Login Page](https://via.placeholder.com/800x600?text=Login+Page)
+![Login Page](./screenshots/login-page.png)
 
 ### Registration Page
 
-![Registration Page](https://via.placeholder.com/800x600?text=Registration+Page)
+![Registration Page](./screenshots/register-page.png)
 
 ### Transactions Dashboard
 
-![Transactions Dashboard](https://via.placeholder.com/800x600?text=Transactions+Dashboard)
+![Transactions Dashboard](./screenshots/transactions-page.png)
 
 ### Status Check Page
 
-![Status Check Page](https://via.placeholder.com/800x600?text=Status+Check+Page)
+![Status Check Page](./screenshots/status-check-page.png)
 
 ## Development
 
