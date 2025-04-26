@@ -55,63 +55,333 @@ npm run start:dev
 
 ## API Documentation
 
+### Base URL
+
+All API endpoints are prefixed with `/api`. For example, if the base URL is `https://payment-site.onrender.com`, the full endpoint would be `https://payment-site.onrender.com/api/auth/login`.
+
 ### Authentication
 
-#### Login
+Most endpoints require JWT authentication. Include the token in the Authorization header:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+### API Endpoints
+
+#### Register a new user
 
 ```http
-POST /api/auth/login
-Content-Type: application/json
+POST /api/auth/register
+```
 
+Request body:
+
+```json
 {
   "email": "user@example.com",
   "password": "password123"
 }
 ```
 
-### Transactions
+Response:
 
-#### List Transactions
-
-```http
-GET /api/transactions
-Query Parameters:
-- page: number (default: 1)
-- limit: number (default: 10)
-- sort: string (e.g., "payment_time")
-- order: "asc" | "desc" (default: "desc")
-```
-
-#### Create Transaction
-
-```http
-POST /api/transactions
-Content-Type: application/json
-
+```json
 {
-  "school_id": "school123",
-  "amount": 1000,
-  "payment_method": "upi"
+  "email": "user@example.com",
+  "_id": "user_id"
 }
 ```
 
-### Webhooks
-
-#### Payment Webhook
+#### Login
 
 ```http
-POST /api/webhooks/payment
-Content-Type: application/json
+POST /api/auth/login
+```
 
+Request body:
+
+```json
 {
-  "event": "payment.success",
-  "data": {
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+Response:
+
+```json
+{
+  "access_token": "jwt_token"
+}
+```
+
+#### Get User Profile
+
+```http
+GET /api/auth/profile
+```
+
+Headers:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+Response:
+
+```json
+{
+  "userId": "user_id",
+  "email": "user@example.com"
+}
+```
+
+#### Create Payment Request
+
+```http
+POST /api/create-payment
+```
+
+Headers:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+Request body:
+
+```json
+{
+  "school_id": "school_id",
+  "amount": "1000",
+  "callback_url": "https://your-callback-url.com"
+}
+```
+
+Response: Redirects to payment gateway URL
+
+#### Check Payment Status
+
+```http
+GET /api/collect-request/:collect_request_id
+```
+
+Headers:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+Response:
+
+```json
+{
+  "status": "success",
+  "payment_details": {
+    "amount": "1000",
     "transaction_id": "txn_123",
-    "amount": 1000,
-    "status": "success"
+    "payment_time": "2024-04-26T12:00:00Z"
   }
 }
 ```
+
+#### Get All Transactions
+
+```http
+GET /api/transactions
+```
+
+Headers:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+Query Parameters:
+
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 10)
+- `sort` (optional): Field to sort by
+- `order` (optional): Sort order ('asc' or 'desc', default: 'desc')
+- `status` (optional): Filter by status
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "collect_id": "order_id",
+      "school_id": "school_id",
+      "gateway": "payment_gateway",
+      "order_amount": "1000",
+      "transaction_amount": "1000",
+      "status": "success",
+      "custom_order_id": "order_id"
+    }
+  ],
+  "meta": {
+    "total": 100,
+    "page": 1,
+    "limit": 10,
+    "totalPages": 10
+  }
+}
+```
+
+#### Get Transactions by School
+
+```http
+GET /api/transactions/school/:schoolId
+```
+
+Headers:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+Query Parameters: Same as above
+Response: Same structure as above
+
+#### Get Transaction Status
+
+```http
+GET /api/transaction-status/:custom_order_id
+```
+
+Headers:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+Response:
+
+```json
+{
+  "collect_id": "order_id",
+  "status": "success",
+  "transaction_amount": "1000",
+  "order_amount": "1000"
+}
+```
+
+#### Process Payment Webhook
+
+```http
+POST /api/webhook
+```
+
+Request body:
+
+```json
+{
+  "order_info": {
+    "order_id": "order_id",
+    "status": "success",
+    "payment_mode": "UPI",
+    "payment_details": {},
+    "Payment_message": "Payment successful",
+    "payment_time": "2024-04-26T12:00:00Z",
+    "error_message": null,
+    "gateway": "payment_gateway",
+    "bank_reference": "ref_123",
+    "order_amount": "1000",
+    "transaction_amount": "1000"
+  }
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "webhookLog": {
+      "collect_request_id": "order_id",
+      "status": "success",
+      "payment_mode": "UPI",
+      "payment_details": {},
+      "payment_message": "Payment successful",
+      "payment_time": "2024-04-26T12:00:00Z",
+      "error_message": null,
+      "gateway": "payment_gateway",
+      "bank_reference": "ref_123",
+      "order_amount": "1000",
+      "transaction_amount": "1000"
+    },
+    "orderStatus": {
+      "collect_id": "order_id",
+      "status": "success",
+      "payment_mode": "UPI",
+      "payment_details": {},
+      "payment_message": "Payment successful",
+      "payment_time": "2024-04-26T12:00:00Z",
+      "error_message": null,
+      "bank_reference": "ref_123",
+      "order_amount": "1000",
+      "transaction_amount": "1000"
+    }
+  }
+}
+```
+
+#### Get Webhook Logs
+
+```http
+GET /api/webhook
+```
+
+Headers:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+Response: Array of webhook logs
+
+#### Get Webhook Log by ID
+
+```http
+GET /api/webhook/:id
+```
+
+Headers:
+
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+Response: Single webhook log entry
+
+## Error Responses
+
+All endpoints may return the following error responses:
+
+```json
+{
+  "statusCode": 400,
+  "message": "Error message",
+  "errors": [
+    {
+      "field": "field_name",
+      "message": "Error message"
+    }
+  ],
+  "timestamp": "2024-04-26T12:00:00.000Z"
+}
+```
+
+Common status codes:
+
+- 400: Bad Request
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not Found
+- 500: Internal Server Error
 
 ## Environment Variables
 
