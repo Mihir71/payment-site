@@ -24,7 +24,7 @@ A robust backend API for managing school payments and transactions.
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-org/edviron-backend.git
+git clone https://github.com/Mihir71/payment-site.git
 cd edviron-backend
 ```
 
