@@ -116,7 +116,11 @@ let TransactionsService = class TransactionsService extends base_service_1.BaseS
             },
         }, { $unwind: { path: '$status', preserveNullAndEmptyArrays: true } });
         if (status?.length) {
-            pipeline.push({ $match: { 'status.status': { $in: status } } });
+            pipeline.push({
+                $match: {
+                    'status.status': { $in: status },
+                },
+            });
         }
         pipeline.push({
             $project: {

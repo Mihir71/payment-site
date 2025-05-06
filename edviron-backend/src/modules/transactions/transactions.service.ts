@@ -22,7 +22,6 @@ export class TransactionsService extends BaseService<OrderDocument> {
     super(orderModel);
   }
 
- 
   async getAllTransactions(filters: TransactionFilterDto) {
     const { page = 1, limit = 10, sort, order = 'desc', status } = filters;
 
@@ -36,7 +35,7 @@ export class TransactionsService extends BaseService<OrderDocument> {
         },
       },
       { $unwind: '$status' },
-     
+
       {
         $project: {
           _id: 0,
@@ -49,7 +48,6 @@ export class TransactionsService extends BaseService<OrderDocument> {
           custom_order_id: { $toString: '$_id' },
         },
       },
-   
     ];
 
     if (status?.length) {
@@ -58,7 +56,6 @@ export class TransactionsService extends BaseService<OrderDocument> {
       });
     }
 
-   
     if (sort) {
       const sortField = sort === 'payment_time' ? 'createdAt' : sort;
       pipeline.push({
@@ -86,7 +83,6 @@ export class TransactionsService extends BaseService<OrderDocument> {
     };
   }
 
-
   async getTransactionsBySchool(
     schoolId: string,
     filters: TransactionFilterDto,
@@ -101,23 +97,19 @@ export class TransactionsService extends BaseService<OrderDocument> {
       dateTo,
     } = filters;
 
-
     const matchConditions: any[] = [];
 
- 
     if (Types.ObjectId.isValid(schoolId)) {
       matchConditions.push({
         $or: [
-          { school_id: new Types.ObjectId(schoolId) }, 
-          { school_id: schoolId }, 
+          { school_id: new Types.ObjectId(schoolId) },
+          { school_id: schoolId },
         ],
       });
     } else {
-      
       matchConditions.push({ school_id: schoolId });
     }
 
-   
     if (dateFrom || dateTo) {
       const dateMatch: any = { createdAt: {} };
       if (dateFrom) dateMatch.createdAt.$gte = new Date(dateFrom);
@@ -125,15 +117,11 @@ export class TransactionsService extends BaseService<OrderDocument> {
       matchConditions.push(dateMatch);
     }
 
-    
-   
-
     const pipeline: PipelineStage[] = [];
     if (matchConditions.length > 0) {
       pipeline.push({ $match: { $and: matchConditions } });
     }
 
-    
     pipeline.push(
       {
         $lookup: {
@@ -143,21 +131,22 @@ export class TransactionsService extends BaseService<OrderDocument> {
           as: 'status',
         },
       },
-      
       { $unwind: { path: '$status', preserveNullAndEmptyArrays: true } },
     );
 
-   
     if (status?.length) {
-      pipeline.push({ $match: { 'status.status': { $in: status } } });
+      pipeline.push({
+        $match: {
+          'status.status': { $in: status },
+        },
+      });
     }
 
-   
     pipeline.push({
       $project: {
         _id: 0,
         collect_id: '$_id',
-        school_id: 1, 
+        school_id: 1,
         gateway: '$gateway_name',
         order_amount: { $ifNull: ['$status.order_amount', 0] },
         transaction_amount: { $ifNull: ['$status.transaction_amount', 0] },
@@ -167,7 +156,6 @@ export class TransactionsService extends BaseService<OrderDocument> {
       },
     });
 
-    
     pipeline.push({
       $sort: {
         [sort === 'payment_time' ? 'createdAt' : sort]:
@@ -175,13 +163,11 @@ export class TransactionsService extends BaseService<OrderDocument> {
       },
     });
 
-    
     const countRes = await this.orderModel
       .aggregate([...pipeline, { $count: 'total' }])
       .exec();
     const total = countRes[0]?.total || 0;
 
-    
     const items = await this.orderModel
       .aggregate([
         ...pipeline,
@@ -200,7 +186,6 @@ export class TransactionsService extends BaseService<OrderDocument> {
       },
     };
   }
-
 
   async getTransactionStatus(customOrderId: string) {
     if (!Types.ObjectId.isValid(customOrderId)) {

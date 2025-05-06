@@ -25,13 +25,13 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // Prefix all routes with /api
+  
   app.setGlobalPrefix('api');
 
-  // Determine port (Render injects PORT)
+
   const port = process.env.PORT || 3000;
 
-  // Bind to 0.0.0.0 so external traffic can reach it
+  
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Application is running on port ${port}`);
 }
